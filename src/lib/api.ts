@@ -1001,6 +1001,13 @@ export const api = {
   },
 
   /**
+   * Sends a prompt to DeepSeek via the backend
+   */
+  async deepseekGenerate(prompt: string, apiKey: string): Promise<string> {
+    return invoke("deepseek_generate", { prompt, apiKey });
+  },
+
+  /**
    * Cancels the currently running Claude Code execution
    * @param sessionId - Optional session ID to cancel a specific session
    */
