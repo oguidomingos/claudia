@@ -8,7 +8,8 @@ import {
   Sparkles,
   Zap,
   Square,
-  Brain
+  Brain,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ interface FloatingPromptInputProps {
   /**
    * Callback when prompt is sent
    */
-  onSend: (prompt: string, model: "sonnet" | "opus") => void;
+  onSend: (prompt: string, model: "sonnet" | "opus" | "deepseek") => void;
   /**
    * Whether the input is loading
    */
@@ -37,7 +38,7 @@ interface FloatingPromptInputProps {
   /**
    * Default model to select
    */
-  defaultModel?: "sonnet" | "opus";
+  defaultModel?: "sonnet" | "opus" | "deepseek";
   /**
    * Project path for file picker
    */
@@ -129,7 +130,7 @@ const ThinkingModeIndicator: React.FC<{ level: number }> = ({ level }) => {
 };
 
 type Model = {
-  id: "sonnet" | "opus";
+  id: "sonnet" | "opus" | "deepseek";
   name: string;
   description: string;
   icon: React.ReactNode;
@@ -147,6 +148,12 @@ const MODELS: Model[] = [
     name: "Claude 4 Opus",
     description: "More capable, better for complex tasks",
     icon: <Sparkles className="h-4 w-4" />
+  },
+  {
+    id: "deepseek",
+    name: "DeepSeek-R1",
+    description: "DeepSeek language model",
+    icon: <Globe className="h-4 w-4" />
   }
 ];
 
@@ -174,7 +181,7 @@ const FloatingPromptInputInner = (
   ref: React.Ref<FloatingPromptInputRef>,
 ) => {
   const [prompt, setPrompt] = useState("");
-  const [selectedModel, setSelectedModel] = useState<"sonnet" | "opus">(defaultModel);
+  const [selectedModel, setSelectedModel] = useState<"sonnet" | "opus" | "deepseek">(defaultModel);
   const [selectedThinkingMode, setSelectedThinkingMode] = useState<ThinkingMode>("auto");
   const [isExpanded, setIsExpanded] = useState(false);
   const [modelPickerOpen, setModelPickerOpen] = useState(false);

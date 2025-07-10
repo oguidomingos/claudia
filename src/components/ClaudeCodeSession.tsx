@@ -94,7 +94,7 @@ export const ClaudeCodeSession: React.FC<ClaudeCodeSessionProps> = ({
   const [forkSessionName, setForkSessionName] = useState("");
   
   // Queued prompts state
-  const [queuedPrompts, setQueuedPrompts] = useState<Array<{ id: string; prompt: string; model: "sonnet" | "opus" }>>([]);
+  const [queuedPrompts, setQueuedPrompts] = useState<Array<{ id: string; prompt: string; model: "sonnet" | "opus" | "deepseek" }>>([]);
   
   // New state for preview feature
   const [showPreview, setShowPreview] = useState(false);
@@ -110,7 +110,7 @@ export const ClaudeCodeSession: React.FC<ClaudeCodeSessionProps> = ({
   const unlistenRefs = useRef<UnlistenFn[]>([]);
   const hasActiveSessionRef = useRef(false);
   const floatingPromptRef = useRef<FloatingPromptInputRef>(null);
-  const queuedPromptsRef = useRef<Array<{ id: string; prompt: string; model: "sonnet" | "opus" }>>([]);
+  const queuedPromptsRef = useRef<Array<{ id: string; prompt: string; model: "sonnet" | "opus" | "deepseek" }>>([]);
   const isMountedRef = useRef(true);
   const isListeningRef = useRef(false);
 
@@ -398,11 +398,36 @@ export const ClaudeCodeSession: React.FC<ClaudeCodeSessionProps> = ({
     }
   };
 
-  const handleSendPrompt = async (prompt: string, model: "sonnet" | "opus") => {
+  const handleSendPrompt = async (prompt: string, model: "sonnet" | "opus" | "deepseek") => {
     console.log('[ClaudeCodeSession] handleSendPrompt called with:', { prompt, model, projectPath, claudeSessionId, effectiveSession });
-    
+
     if (!projectPath) {
       setError("Please select a project directory first");
+      return;
+    }
+
+    if (model === "deepseek") {
+      try {
+        setIsLoading(true);
+        const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY as string;
+        const userMessage: ClaudeStreamMessage = {
+          type: "user",
+          message: { content: [{ type: "text", text: prompt }] }
+        };
+        setMessages(prev => [...prev, userMessage]);
+        const result = await api.deepseekGenerate(prompt, apiKey);
+        const assistantMessage: ClaudeStreamMessage = {
+          type: "assistant",
+          message: { content: [{ type: "text", text: result }] }
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } catch (err) {
+        console.error("DeepSeek error:", err);
+        setError("DeepSeek request failed");
+      } finally {
+        setIsLoading(false);
+        hasActiveSessionRef.current = false;
+      }
       return;
     }
 
@@ -1176,7 +1201,7 @@ export const ClaudeCodeSession: React.FC<ClaudeCodeSessionProps> = ({
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-xs font-medium text-muted-foreground">#{index + 1}</span>
                           <span className="text-xs px-1.5 py-0.5 bg-primary/10 text-primary rounded">
-                            {queuedPrompt.model === "opus" ? "Opus" : "Sonnet"}
+                            {queuedPrompt.model === "opus" ? "Opus" : queuedPrompt.model === "deepseek" ? "DeepSeek" : "Sonnet"}
                           </span>
                         </div>
                         <p className="text-sm line-clamp-2 break-words">{queuedPrompt.prompt}</p>

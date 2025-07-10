@@ -152,6 +152,10 @@ Menu → MCP Manager → Add Server → Configure
 
 - **Claude Code CLI**: Install from [Claude's official site](https://claude.ai/code)
 
+### DeepSeek Configuration
+
+Create a `.env` file based on `.env.example` and set your `VITE_DEEPSEEK_API_KEY`.
+
 ### Release Executables Will Be Published Soon
 
 ## 🔨 Build from Source

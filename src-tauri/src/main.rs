@@ -38,6 +38,7 @@ use commands::mcp::{
 use commands::usage::{
     get_session_stats, get_usage_by_date_range, get_usage_details, get_usage_stats,
 };
+use commands::deepseek::deepseek_generate;
 use commands::storage::{
     storage_list_tables, storage_read_table, storage_update_row, storage_delete_row,
     storage_insert_row, storage_execute_sql, storage_reset_database,
@@ -106,6 +107,7 @@ fn main() {
             continue_claude_code,
             resume_claude_code,
             cancel_claude_execution,
+            deepseek_generate,
             list_running_claude_sessions,
             get_claude_session_output,
             list_directory_contents,
